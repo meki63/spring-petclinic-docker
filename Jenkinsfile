@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials') // Create Docker Hub credentials in Jenkins
-        SLACK_CHANNEL = '#build-status'
+        SLACK_CHANNEL = '#devsecops-build-status'
     }
 
     stages {
