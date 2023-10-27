@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-jammy
+FROM  loftsh/java-maven
  
 WORKDIR /app
 # building phase
