@@ -1,11 +1,8 @@
-FROM  eclipse-temurin:17-jdk-jammy
- 
-WORKDIR /app
-# building phase
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
+FROM openjdk:8-jdk-alpine
 
-COPY src ./src
+COPY target/*.jar spring-petclinic-2.7.0-SNAPSHOT.jar
 
-CMD ["./mvnw", "spring-boot:run"]
+ENV PORT 8081
+EXPOSE $PORT
+
+ENTRYPOINT ["java","-jar","-Xmx1024M","-Dserver.port=${PORT}","spring-petclinic-2.7.0-SNAPSHOT.jar"]
