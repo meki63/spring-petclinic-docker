@@ -21,7 +21,7 @@ pipeline {
               withCredentials([string(credentialsId: 'jboss-access-token', variable: 'ARTIFACTORY_API_TOKEN')]) {
                sh'''
                  set +x
-                 'curl -u ${ARTIFACTORY_API_TOKEN} -X PUT "http://34.239.127.114:8081/artifactory/petclinic-jars/${env.BUILD_NUMBER}/petclinic-${env.BUILD_NUMBER}.jar" -T target/spring-petclinic-2.7.0-SNAPSHOT.jar'
+                 'curl -u ${ARTIFACTORY_API_TOKEN} -X PUT "http://34.239.127.114:8081/artifactory/petclinic-jars/${env.BUILD_NUMBER}/petclinic-${env.BUILD_NUMBER}.jar" -T /var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
                 '''
             }
           }
