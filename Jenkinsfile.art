@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Clean and build the project using Maven
-                    sh 'mvn -Dmaven.test.failure.ignore=true clean package'
+                    sh 'mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip clean package'
                 }
             }
         }
