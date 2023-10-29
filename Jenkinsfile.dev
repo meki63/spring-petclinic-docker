@@ -19,54 +19,35 @@ pipeline {
         
         stage('Push to Artifactory') {
             steps {
-              withCredentials([string(credentialsId: 'jboss-access-token', variable: 'ARTIFACTORY_API_TOKEN')]) {
-               sh'''
-                 set +x
-                 'curl -u ${ARTIFACTORY_API_TOKEN} -X PUT "http://34.239.127.114:8081/artifactory/petclinic-jars/${env.BUILD_NUMBER}/petclinic-${env.BUILD_NUMBER}.jar" -T target/*.jar'
-                '''
+                echo 'Pushing artifact to Artifactory...'
+                script {
+                    def archivedArtifact = archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+                    if (archivedArtifact != null) {
+                        def artifactPath = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/archive/target/${archivedArtifact}"
+                        withCredentials([string(credentialsId: 'jboss-access-token', variable: 'ARTIFACTORY_API_TOKEN')]) {
+                            sh '''
+                                set +x
+                                curl -u $ARTIFACTORY_API_TOKEN -X PUT "http://34.239.127.114:8081/artifactory/petclinic-jars/${env.BUILD_NUMBER}/petclinic-${env.BUILD_NUMBER}.jar" -T "$artifactPath"
+                            '''
+                        }
+                    } else {
+                        error 'No archived artifact found!'
+                    }
+                }
             }
-          }
         }
     }  
-    post{
-        failure{
-            slackSend( channel: "#build-status", token: "slack-jenkins-secret-key token", color: "good", message: "${custom_msg()}")
+
+    post {
+        failure {
+            slackSend(channel: "#build-status", token: "slack-jenkins-secret-key token", color: "good", message: "${custom_msg()}")
         }
-     }
+    }
 }
 
-
-def custom_msg()
-{
-  def JENKINS_URL= "http://3.94.201.188:8080"
-  def JOB_NAME = env.JOB_NAME
-  def BUILD_ID= env.BUILD_ID
-  def JENKINS_LOG= " FAILED: Job [${env.JOB_NAME}] Logs path: ${JENKINS_URL}/job/${JOB_NAME}/${BUILD_ID}/consoleText"
-  return JENKINS_LOG
+def custom_msg() {
+    def JENKINS_URL = "http://3.94.201.188:8080"
+    def JOB_NAME = env.JOB_NAME
+    def BUILD_ID = env.BUILD_ID
+    return "FAILED: Job [$JOB_NAME] Logs path: $JENKINS_URL/job/$JOB_NAME/$BUILD_ID/consoleText"
 }
-
-/*
-stage('Deploy') {
-            steps {
-                withMaven(maven: 'Maven 3') {
-                    sh "mvn deploy -Dmaven.test.skip=true -DaltDeploymentRepository=snapshot-repo::default::http://lab.cloudsheger.com:8082/artifactory/java-web-app/"
-                }
-            }
-        }
-*/        
-
- /*  
-stage('SonarQube analysis') {
-            steps {
-                withSonarQubeEnv('SonarScanner') {
-                    sh "mvn sonar:sonar \
-                        -Dsonar.host.url=http://34.239.127.114:9000 \
-                        -Dsonar.projectKey=demo \
-                        -Dsonar.login=${SONAR_LOGIN_TOKEN} \
-                        -Dsonar.projectName='demo' \
-                        -Dsonar.projectVersion=1.0.0 \
-                        -Dsonar.java.binaries=target/classes"
-                }
-            }
-        } 
-*/ 
