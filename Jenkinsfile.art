@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    environment {
+        ARTIFACTORY_API_KEY = credentials('artifactory-api-key')
+    }
+
+    stages {
+        stage('Clean and Build') {
+            steps {
+                script {
+                    // Clean and build the project using Maven
+                    sh 'mvn -Dmaven.test.failure.ignore=true clean package'
+                }
+            }
+        }
+
+        stage('Upload to Artifactory') {
+            steps {
+                script {
+                    // Upload the JAR file to Artifactory using curl
+                    def artifactoryUrl = 'http://44.201.246.199:8081/artifactory/generic-local/petclinic.jar'
+                    def localJarPath = '/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
+
+                    sh "curl -H 'X-JFrog-Art-Api:${ARTIFACTORY_API_KEY}' -T ${localJarPath} ${artifactoryUrl}"
+                }
+            }
+        }
+    }
+}
