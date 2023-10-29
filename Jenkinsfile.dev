@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        ARTIFACTORY_API_TOKEN = credentials('jboss-access-token')
+        ARTIFACTORY_API_KEY = credentials('artifactory-api-key')
     }
 
     stages {
@@ -17,15 +17,16 @@ pipeline {
             }
         }
         
-        stage('Push to Artifactory') {
+        stage('Upload to Artifactory') {
             steps {
-              withCredentials([string(credentialsId: 'jboss-access-token', variable: 'ARTIFACTORY_API_TOKEN')]) {
-               sh'''
-                 set +x
-                 'curl -H 'X-JFrog-Art-Api:${ARTIFACTORY_API_TOKEN}' -T /var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar "http://44.201.246.199:8081/artifactory/generic-local/petclinic:${env.BUILD_NUMBER}.jar"'
-                '''
+                script {
+                    // Upload the JAR file to Artifactory using curl
+                    def artifactoryUrl = 'http://44.201.246.199:8081/artifactory/generic-local/petclinic.jar'
+                    def localJarPath = '/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
+
+                    sh "curl -H 'X-JFrog-Art-Api:${ARTIFACTORY_API_KEY}' -T ${localJarPath} ${artifactoryUrl}"
+                }
             }
-          }
         }
     }  
     post{
