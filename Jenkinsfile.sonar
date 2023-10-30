@@ -1,18 +1,14 @@
 pipeline {
     agent any
-    environment {
-        SONAR_LOGIN_TOKEN = credentials('sonarqube-login-token')
+    parameters {
+        string(name: 'artifactory-api-key', defaultValue: '', description: 'Artifactory API Key')
+        string(name: 'SONAR_TOKEN', defaultValue: '', description: 'SonarQube Token')
     }
 
     stages {
         stage('Test') {
             steps {
-                sh 'echo "Skipping Tests" '
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip clean package'
+                sh 'echo "dummy test" '
             }
         }
         stage('SonarQube analysis') {
@@ -21,10 +17,41 @@ pipeline {
                     sh "mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip sonar:sonar \
                         -Dsonar.host.url=http://3.88.223.24:9000 \
                         -Dsonar.projectKey=petclinic-app-code-analysis \
-                        -Dsonar.token=sqp_2c92a7dc63b1c72fe77c49ad3b0ebead5f6d040b \
+                        -Dsonar.token=${params.SONAR_TOKEN} \
                         -Dsonar.projectName='petclinic-app-code-analysis'"
                 }
             }
         }
+        stage('Build') {
+            steps {
+                sh 'mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip clean package'
+                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+            }
+        }
+        
+        stage('Upload to Artifactory') {
+            steps {
+                script {
+                    // Upload the JAR file to Artifactory using curl
+                    def artifactoryUrl = 'http://44.201.246.199:8081/artifactory/generic-local/petclinic.jar'
+                    def localJarPath = '/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
+
+                    sh "curl -H 'X-JFrog-Art-Api:${params.artifactory-api-key}' -T ${localJarPath} ${artifactoryUrl}"
+                }
+            }
+        }
+    }  
+    post {
+        failure {
+            slackSend(channel: "#build-status", token: "slack-jenkins-secret-key token", color: "good", message: "${custom_msg()}")
+        }
     }
+}
+
+def custom_msg() {
+    def JENKINS_URL = "http://3.94.201.188:8080"
+    def JOB_NAME = env.JOB_NAME
+    def BUILD_ID = env.BUILD_ID
+    def JENKINS_LOG = " FAILED: Job [${env.JOB_NAME}] Logs path: ${JENKINS_URL}/job/${JOB_NAME}/${BUILD_ID}/consoleText"
+    return JENKINS_LOG
 }
