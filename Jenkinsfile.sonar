@@ -15,7 +15,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarScanner') {
                     sh "mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip sonar:sonar \
-                        -Dsonar.host.url=http://3.88.223.24:9000 \
+                        -Dsonar.host.url=http://54.88.213.239:9000 \
                         -Dsonar.projectKey=petclinic-app-code-analysis \
                         -Dsonar.token=${params.SONAR_TOKEN} \
                         -Dsonar.projectName='petclinic-app-code-analysis'"
@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     // Upload the JAR file to Artifactory using curl
-                    def artifactoryUrl = 'http://44.201.246.199:8081/artifactory/generic-local/petclinic.jar'
+                    def artifactoryUrl = 'http://52.87.76.219:8081/artifactory/generic-local/petclinic.jar'
                     def localJarPath = '/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
 
                     sh "curl -H 'X-JFrog-Art-Api:${params.artifactory-api-key}' -T ${localJarPath} ${artifactoryUrl}"
