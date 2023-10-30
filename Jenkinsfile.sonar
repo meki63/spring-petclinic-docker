@@ -21,10 +21,8 @@ pipeline {
                     sh "mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip sonar:sonar \
                         -Dsonar.host.url=http://3.88.223.24:9000 \
                         -Dsonar.projectKey=petclinic-app-code-analysis \
-                        -Dsonar.login=${SONAR_LOGIN_TOKEN} \
-                        -Dsonar.projectName='petclinic-app-code-analysis' \
-                        -Dsonar.projectVersion=1.0.0 \
-                        -Dsonar.java.binaries=target/classes"
+                        -Dsonar.token=sqp_2c92a7dc63b1c72fe77c49ad3b0ebead5f6d040b \
+                        -Dsonar.projectName='petclinic-app-code-analysis'"
                 }
             }
         }

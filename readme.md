@@ -65,7 +65,13 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
  docker-compose up -d
 ```
 
+## Local sonar test
 
+mvn clean verify sonar:sonar \
+  -Dsonar.projectKey=petclinic-app \
+  -Dsonar.projectName='petclinic-app' \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.token=sqp_15f59e594d4259b29a83ae88d41b866783599895
 
 ## References
 

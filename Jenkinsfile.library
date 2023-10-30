@@ -1,0 +1,17 @@
+@Library('your-shared-library') _
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                // Your build steps here
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                sonarqubeScan 'projectKey', 'projectName', 'http://sonarqube-server:9000'
+            }
+        }
+    }
+}
