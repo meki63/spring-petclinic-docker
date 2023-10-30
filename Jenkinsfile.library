@@ -1,11 +1,15 @@
 @Library('sonarqube-utils') _
+import sonarscan
 
 pipeline {
     agent any
     stages {
         stage('SonarQube Analysis') {
             steps {
-                sonarqubeScan 'petclinic-app-code-analysis', 'petclinic-app-code-analysis', 'http://3.88.223.24:9000', 'sqp_2c92a7dc63b1c72fe77c49ad3b0ebead5f6d040b'
+                script {
+                    def scanResult = sonarscan.sonar_scan('petclinic-app-code-analysis', 'petclinic-app-code-analysis', 'http://3.88.223.24:9000', 'sqp_2c92a7dc63b1c72fe77c49ad3b0ebead5f6d040b')
+                    echo "SonarQube Scan Result:\n${scanResult}"
+                }
             }
         }
     }
