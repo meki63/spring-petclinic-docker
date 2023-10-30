@@ -33,6 +33,17 @@ pipeline {
                 }
             }
         }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image cloudsheger/simple-java-app:${env.BUILD_NUMBER} > trivy.txt" 
+            }
+        }
+
+        stage("Deploy Using Docker"){
+            steps{
+                sh " docker run -d --name petclinic -p 8082:8082 cloudsheger/simple-java-app:${env.BUILD_NUMBER} "
+            }
+        }
 
         stage('Send Slack Alert') {
             when {
