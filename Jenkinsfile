@@ -33,6 +33,11 @@ pipeline {
                 }
             }
         }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image cloudsheger/simple-java-app:${env.BUILD_NUMBER} > trivy.txt" 
+            }
+        }
 
         stage("Deploy Using Docker"){
             steps{

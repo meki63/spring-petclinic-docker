@@ -18,17 +18,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube analysis') {
-            steps {
-                withSonarQubeEnv('SonarScanner') {
-                    sh "mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip sonar:sonar \
-                        -Dsonar.host.url=http://54.88.213.239:9000 \
-                        -Dsonar.projectKey=petclinic-demo \
-                        -Dsonar.token=sqp_662a997d4bd39b2afbe34f7dafcfe69a76a28502 \
-                        -Dsonar.projectName='petclinic-demo'"
-                }
-            }
-        }
+
         
         stage('Upload to Artifactory') {
             steps {
