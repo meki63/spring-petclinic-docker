@@ -1,8 +1,8 @@
-# Use an official Apache Tomcat image as a base
-FROM tomcat:9.0
+FROM openjdk:8-jdk-alpine
 
-# Copy the packaged WAR file into the webapps directory of Tomcat
-COPY target/spring-petclinic-2.7.0-SNAPSHOT.war /usr/local/tomcat/webapps/
+COPY target/*.jar spring-petclinic-2.7.0-SNAPSHOT.jar
 
-# Expose port 8080 (Tomcat's default port)
-EXPOSE 8080
+ENV PORT 8080
+EXPOSE $PORT
+
+ENTRYPOINT ["java","-jar","-Xmx1024M","-Dserver.port=${PORT}","spring-petclinic-2.7.0-SNAPSHOT.jar"]
