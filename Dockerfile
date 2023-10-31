@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk-alpine
 
-COPY target/*.jar spring-petclinic-2.7.0-SNAPSHOT.jar
+COPY /var/lib/jenkins/workspace/petclinic-artifactory/target/*.jar spring-petclinic-2.7.0-SNAPSHOT.jar
 
 ENV PORT 8080
 EXPOSE $PORT
