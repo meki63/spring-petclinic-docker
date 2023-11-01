@@ -31,6 +31,8 @@ pipeline {
         stage('Scan') {
             steps {
                 script {
+                    // Scan all vuln levels
+                    sh 'mkdir -p reports'
 
                     // Scan the Docker image
                     sh "trivy image --ignore-unfixed --vuln-type os,library --format template --template '@html.tpl' -o ${env.trivyReportDir}/java-scan.html ${env.CUSTOM_IMAGE_NAME}"
