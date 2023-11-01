@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script {
                     // Call the buildDocker() function from your shared library
-                    def buildResult = buildDocker()
+                    def buildResult = buildDocker(env.CUSTOM_IMAGE_NAME)
 
                     if (buildResult == 'SUCCESS') {
                         echo 'Docker build successful'
