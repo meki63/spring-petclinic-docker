@@ -18,16 +18,27 @@ pipeline {
             }
         }
 
-
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('SonarScanner') {
+                    sh "mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip sonar:sonar \
+                        -Dsonar.host.url=http://54.88.213.239:9000 \
+                        -Dsonar.projectKey=petclinic-demo \
+                        -Dsonar.token=sqp_662a997d4bd39b2afbe34f7dafcfe69a76a28502 \
+                        -Dsonar.projectName='petclinic-demo'"
+                }
+            }
+        }
         
         stage('Upload to Artifactory') {
             steps {
                 script {
                     // Upload the JAR file to Artifactory using curl
-                    def artifactoryUrl = 'http://52.87.76.219:8081/artifactory/generic-local/petclinic/petclinic.jar'
-                    def localJarPath = '/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
+                   // def artifactoryUrl = 'http://52.87.76.219:8081/artifactory/generic-local/petclinic/petclinic.jar'
+                   // def localJarPath = '/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar'
 
-                    sh "curl -H 'X-JFrog-Art-Api:${ARTIFACTORY_API_KEY}' -T ${localJarPath} ${artifactoryUrl}"
+                    //sh "curl -H 'X-JFrog-Art-Api:${ARTIFACTORY_API_KEY}' -T ${localJarPath} ${artifactoryUrl}"
+                   sh 'curl -H 'X-JFrog-Art-Api:AKCp8pRa4dZSrr2BBZNJC2k1Aryh3inFfH37dLkzAyP3mhEEoZLCAX6DbwWkHFNV8e33Cdrx1' -T /var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar "http://52.87.76.219:8081/artifactory/cloudsheger-general-repo/app/petclinic.jar"'
                 }
             }
         }
