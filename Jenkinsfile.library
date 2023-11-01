@@ -20,13 +20,7 @@ pipeline {
             steps {
                 script {
                     // Call the buildDocker() function from your shared library
-                    def buildResult = buildDocker(env.CUSTOM_IMAGE_NAME)
-
-                    if (buildResult == 'SUCCESS') {
-                        echo 'Docker build successful'
-                    } else {
-                        error 'Docker build failed'
-                    }
+                    buildDocker(env.CUSTOM_IMAGE_NAME)
                 }
             }
         }
