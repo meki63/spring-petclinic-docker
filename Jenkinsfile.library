@@ -10,6 +10,7 @@ pipeline {
         LOCAL_JAR_PATH = "/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar"
         ARTIFACTORY_URL = "http://3.88.183.25:8081/artifactory/cloudsheger-general-repo/app/petclinic.jar"
         ARTIFACTORY_API_KEY = credentials("jfrog_api_key")
+        trivyReportDir = 'reports'
     }
 
     stages {
@@ -24,6 +25,34 @@ pipeline {
                 script {
                     // Call the buildDocker() function from your shared library
                     buildDocker(env.CUSTOM_IMAGE_NAME)
+                }
+            }
+        }
+        stage('Scan') {
+            steps {
+                script {
+                    // Install trivy
+                    sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3'
+                    sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
+
+                    // Scan the Docker image
+                    sh "trivy image --ignore-unfixed --vuln-type os,library --format template --template '@html.tpl' -o ${trivyReportDir}/java-scan.html ${dockerImageName}"
+                    
+                    // Publish Trivy HTML report
+                    publishHTML(
+                        target: [
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: trivyReportDir,
+                            reportFiles: 'java-scan.html',
+                            reportName: 'Trivy Scan',
+                            reportTitles: 'Trivy Scan'
+                        ]
+                    )
+
+                    // Fail the build on CRITICAL vulnerabilities
+                    sh "trivy image --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ${dockerImageName}"
                 }
             }
         }
