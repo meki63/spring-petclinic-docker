@@ -9,7 +9,7 @@ pipeline {
         DOCKER_PORT = "8082"
         LOCAL_JAR_PATH = "/var/lib/jenkins/workspace/petclinic-artifactory/target/spring-petclinic-2.7.0-SNAPSHOT.jar"
         ARTIFACTORY_URL = "http://3.88.183.25:8081/artifactory/cloudsheger-general-repo/app/petclinic.jar"
-        ARTIFACTORY_API_KEY = credentials(jfrog_api_key)
+        ARTIFACTORY_API_KEY = credentials("jfrog_api_key")
     }
 
     stages {
