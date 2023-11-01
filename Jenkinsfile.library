@@ -33,7 +33,7 @@ pipeline {
                 script {
 
                     // Scan the Docker image
-                    sh "trivy image --ignore-unfixed --vuln-type os,library --format template --template '@html.tpl' -o ${trivyReportDir}/java-scan.html ${dockerImageName}"
+                    sh "trivy image --ignore-unfixed --vuln-type os,library --format template --template '@html.tpl' -o ${trivyReportDir}/java-scan.html ${env.CUSTOM_IMAGE_NAME}"
                     
                     // Publish Trivy HTML report
                     publishHTML(
@@ -49,7 +49,7 @@ pipeline {
                     )
 
                     // Fail the build on CRITICAL vulnerabilities
-                    sh "trivy image --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ${dockerImageName}"
+                    sh "trivy image --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ${env.CUSTOM_IMAGE_NAME}"
                 }
             }
         }
