@@ -12,7 +12,12 @@ pipeline {
                 checkout scm
             }
         }
-
+        stage('Build') {
+            steps {
+                sh 'mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip clean package'
+                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
