@@ -41,7 +41,7 @@ pipeline {
 
         stage("Deploy Using Docker"){
             steps{
-                sh " docker run -d --name petclinic -p 8082:8082 cloudsheger/simple-java-app:${env.BUILD_NUMBER} "
+                sh " docker run -d --name petclinic -p 8082:8082 meki69/simple-java-app:${env.BUILD_NUMBER} "
             }
         }
 
