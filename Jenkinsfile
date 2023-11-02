@@ -21,7 +21,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def customImageName = "cloudsheger/simple-java-app:${env.BUILD_NUMBER}"
+                    def customImageName = "meki69/simple-java-app:${env.BUILD_NUMBER}"
                     sh "docker build -t $customImageName ."
                 }
             }
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASSWORD']]) {
-                        def customImageName = "cloudsheger/simple-java-app:${env.BUILD_NUMBER}"
+                        def customImageName = "meki69/simple-java-app:${env.BUILD_NUMBER}"
                         sh "docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD"
                         sh "docker push $customImageName"
                     }
