@@ -38,31 +38,10 @@ pipeline {
                 }
             }
         }
-        stage("TRIVY"){
-            steps{
-                sh "trivy image cloudsheger/simple-java-app:${env.BUILD_NUMBER} > trivy.txt" 
-            }
-        }
 
         stage("Deploy Using Docker"){
             steps{
                 sh " docker run -d --name petclinic -p 8082:8082 cloudsheger/simple-java-app:${env.BUILD_NUMBER} "
-            }
-        }
-
-        stage('Send Slack Alert') {
-            when {
-                expression { currentBuild.resultIsBetterOrEqualTo('FAILURE') }
-            }
-            steps {
-                script {
-                    slackSend(
-                        color: 'danger',
-                        channel: env.SLACK_CHANNEL,
-                        message: "Build failed: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\n${env.BUILD_URL}",
-                        tokenCredentialId: 'slack-token'
-                    )
-                }
             }
         }
 
@@ -71,19 +50,6 @@ pipeline {
                 script {
                     sh 'docker system prune -f'
                 }
-            }
-        }
-    }
-
-    post {
-        success {
-            script {
-                slackSend(
-                    color: 'good',
-                    channel: env.SLACK_CHANNEL,
-                    message: "Build successful: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\n${env.BUILD_URL}",
-                    tokenCredentialId: 'slack-token'
-                )
             }
         }
     }
